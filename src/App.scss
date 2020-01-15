@@ -3,3 +3,43 @@
 // MDC Typography
 //
 @import "@material/typography/mdc-typography";
+
+
+html, body {
+	margin: 0;
+	padding: 0;
+}
+html {
+  height: 100vh;
+  width: 100vw;
+  position: fixed;
+}
+
+body, app {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.drawer-container {
+  flex-grow: 1;
+  height: 0;
+  display: flex;
+}
+
+.app-drawer, .app-main-content {
+  overflow: auto;
+  height: 100%;
+}
+
+.app-app-content {
+  flex: auto;
+  position: relative;
+  width: 0;
+  flex-grow: 1;
+}
+
+.app-main-content {
+  overflow: auto;
+  display: flex;
+}
