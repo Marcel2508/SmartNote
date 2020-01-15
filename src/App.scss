@@ -43,3 +43,32 @@ body, app {
   overflow: auto;
   display: flex;
 }
+
+
+.disabled{
+  color: #999;
+  line-height: 2;
+  display:block;
+  text-align: center;
+}
+
+.CodeMirror{
+  width:calc(50% - 2px);
+  height:100%;
+  border-right:2px solid #BBB;
+  float:left;
+}
+
+.CodePreview{
+  width:50%;
+  height:100%;
+  float:left;
+  font-family: sans-serif;
+  padding:10px;
+}
+
+.numCount{
+  position:absolute;
+  bottom:0px;
+  left:0px;
+}

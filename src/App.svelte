@@ -3,10 +3,14 @@
   import List, {Item, Text, Separator, Subheader} from '@smui/list';
 	import H6 from '@smui/common/H6.svelte';
 	import {Icon} from '@smui/button';
-	
+
+	import Sidebar from './components/Sidebar.svelte';
+	import NoteEditor from './components/NoteEditor.svelte';
+
+	let textContent = "";
 
 	function addNote(){
-		alert("ADD");
+		textContent = "HALLO WELT!";
 	}
 
 </script>
@@ -24,21 +28,19 @@
 			</Item>
 			<Separator nav/>
 			<List>
-				<Item href="javascript:void(0)">
-					<Text>Main</Text>
-				</Item>
-				<Item href="javascript:void(0)">
-					<Text>Other</Text>
-				</Item>
+				<Sidebar></Sidebar>
 
 				<Separator nav />
 				<Subheader component={H6}>Starred</Subheader>
 			</List>
 		</Content>
+		<div class="numCount">Charachter Count: {textContent.length}</div>
 	</Drawer>
 
 	<AppContent class="app-app-content">
-		<main class="app-main-content">HALLO WELT</main>
+		<main class="app-main-content">
+			<NoteEditor bind:textContent={textContent}></NoteEditor>
+		</main>
 	</AppContent>
 </div>
 
