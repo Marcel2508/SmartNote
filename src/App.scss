@@ -52,23 +52,101 @@ body, app {
   text-align: center;
 }
 
-.CodeMirror{
+.editorHalf{
   width:calc(50% - 2px);
   height:100%;
   border-right:2px solid #BBB;
   float:left;
+  padding:0px;
+  margin: 0px;
 }
 
-.CodePreview{
-  width:50%;
+.CodeMirror{
+  width:100%;
+  height:calc(100% - 30px);
+}
+
+.fileSettingsBar{
+  height:29px;
+  border-bottom: 1px solid #BBB;
+}
+
+.fileSettingsBar input[type="text"]{
   height:100%;
+  margin:0px;
+  padding:0px;
+  border-top:0px;
+  border-bottom:0px;
+  outline: 0;
+  border-left: 0px;
+  padding-left:5px; 
+  float:left;
+  width:300px;
+}
+
+
+.CodePreview{
+  width: calc(50% - 20px);
+  height: calc(100% - 20px);
   float:left;
   font-family: sans-serif;
   padding:10px;
+  overflow:auto;
 }
 
 .numCount{
   position:absolute;
   bottom:0px;
   left:0px;
+  text-align:center;
+}
+
+.ico{
+  color: #27ae60;
+}
+
+.txt{
+  color: #27ae60;
+}
+
+
+.fab-btn, .fab-btn:hover, .fab-btn:active, .fab-btn:focus{
+  color: #27ae60;
+  background-color: transparent;
+  height:29px;
+  width:29px;
+  box-shadow: none;
+  float:left;
+}
+
+.fab-btn.disabled{
+  color: #CDCDCD;
+}
+
+.fab-btn.del, .fab-btn.del:active, .fab-btn.del:focus{
+  color: #CDCDCD;
+  transition:0.5s;
+  background-color: transparent;
+  height:29px;
+  width:29px;
+  box-shadow: none;
+  float:right;
+}
+
+.fab-btn.del:hover{
+  color: #AA0000;
+  transition: 0.5s;
+}
+
+.save-btn{
+  float:right;
+  height:29px;
+}
+
+.save-btn > .save-text{
+  color: #27ae60;
+}
+
+.save-btn > .save-text.disabled{
+  color: #CDCDCD;
 }

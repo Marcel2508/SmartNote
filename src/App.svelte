@@ -4,14 +4,50 @@
 	import H6 from '@smui/common/H6.svelte';
 	import {Icon} from '@smui/button';
 
+	import {onMount} from 'svelte';
+
 	import Sidebar from './components/Sidebar.svelte';
 	import NoteEditor from './components/NoteEditor.svelte';
 
+	export let appVersion;
+
 	let textContent = "";
+	let fileName = "new file";
+	let appData={};
 
 	function addNote(){
 		textContent = "HALLO WELT!";
 	}
+
+	function loadLicense(){
+		fetch("/license-notice.md").then(x=>x.text()).then((licenseNotes)=>{
+			textContent=licenseNotes;
+		}).catch(ex=>{
+			alert("Error loading License Info!");
+		})
+	}
+
+	function initApp(){
+		//Load LocalStorage Data
+		const fileConfig = localStorage.getItem("smartnote");
+		if(fileConfig==null){
+			//Bootstrap Data
+			appData = {
+				"created":new Date(),
+				"version":appVersion,
+				"fileTree":{}
+			};
+			localStorage.setItem("smartnote",JSON.stringify(appData));
+		}else{
+			appData = JSON.parse(localStorage.getItem("smartnote"));
+			if(appData.version != appVersion)
+				alert("Invalid App-Version!");
+			console.log("Loaded From Storage");
+			console.log(appData);
+		}
+	}
+
+	onMount(initApp);
 
 </script>
 
@@ -34,12 +70,14 @@
 				<Subheader component={H6}>Starred</Subheader>
 			</List>
 		</Content>
-		<div class="numCount">Charachter Count: {textContent.length}</div>
+		<div class="numCount">
+			<a on:click={loadLicense} href="javascript:void(0);" style="font-family:sans-serif;">Third party Libraries</a>
+		</div>
 	</Drawer>
 
 	<AppContent class="app-app-content">
 		<main class="app-main-content">
-			<NoteEditor bind:textContent={textContent}></NoteEditor>
+			<NoteEditor bind:textContent={textContent} fileName={fileName}></NoteEditor>
 		</main>
 	</AppContent>
 </div>

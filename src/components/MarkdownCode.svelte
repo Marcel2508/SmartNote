@@ -1,5 +1,6 @@
 <script>
-  import {onMount} from 'svelte';
+  import {onMount,createEventDispatcher} from 'svelte';
+  const dispatch = createEventDispatcher();
 
   export let value = "";
 
@@ -27,6 +28,8 @@
     clearTimeout(debumpTimeout);
     debumpTimeout = setTimeout(()=>{
       innerValue = codeEditor.getValue();
+      if(innerValue!=value)
+        dispatch("change");
       value=innerValue;
     },400);
   }
