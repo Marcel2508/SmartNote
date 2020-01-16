@@ -3,25 +3,46 @@
   import List, {Item, Text, Separator, Subheader} from '@smui/list';
 	import H6 from '@smui/common/H6.svelte';
 	import {Icon} from '@smui/button';
+	import Menu from '@smui/menu';
 
 	import {onMount} from 'svelte';
 
 	import Sidebar from './components/Sidebar.svelte';
 	import NoteEditor from './components/NoteEditor.svelte';
 
+	import FileEntry from './fileEntry.js';
+	import uniqId from './uniqId.js';
+
+	let addMenu;
+
 	export let appVersion;
 
 	let textContent = "";
 	let fileName = "new file";
 	let appData={};
+	let fileTree = [];
+	let selectedFile = null;
 
 	function addNote(){
-		textContent = "HALLO WELT!";
+		//Create and initiate a new Node!
+		const f = new FileEntry({id:uniqId(),name:"undefined",type:2,parent:"#"});
+		fileTree.push(f);
+		textContent = "";
+		fileName = "undefined";
+		selectedFile = f;
+		fileTree = fileTree;
+	}
+
+	function addFolder(){
+		fileTree.push(new FileEntry({id:uniqId(),name:"New Folder",type:1,parent:"#"}));
+		fileTree = fileTree;
 	}
 
 	function loadLicense(){
 		fetch("/license-notice.md").then(x=>x.text()).then((licenseNotes)=>{
 			textContent=licenseNotes;
+			fileName = "LICENSE_NOTICE";
+			selectedFile=null;
 		}).catch(ex=>{
 			alert("Error loading License Info!");
 		})
@@ -35,13 +56,15 @@
 			appData = {
 				"created":new Date(),
 				"version":appVersion,
-				"fileTree":{}
+				"fileTree":[]
 			};
 			localStorage.setItem("smartnote",JSON.stringify(appData));
 		}else{
 			appData = JSON.parse(localStorage.getItem("smartnote"));
 			if(appData.version != appVersion)
 				alert("Invalid App-Version!");
+
+			fileTree = appData.fileTree;
 			console.log("Loaded From Storage");
 			console.log(appData);
 		}
@@ -58,13 +81,27 @@
 			<Subtitle>Take Notes - The easy way!</Subtitle>
 		</Header>
 		<Content>
-			<Item href="javascript:void(0)" on:click={addNote}>
-				<Icon class="material-icons ico">add</Icon>
-				<Text class="txt">Add</Text>
-			</Item>
+			<div style="min-width:100%;">
+				<Item href="javascript:void(0)" on:click={()=>addMenu.setOpen(true)}>
+					<Icon class="material-icons ico">add</Icon>
+					<Text class="txt">Add</Text>
+				</Item>
+				<Menu bind:this={addMenu}>
+					<List>
+						<Item on:SMUI:action={addNote}>
+							<Icon class="material-icons" style="padding-right:5px;">note_add</Icon>
+							<Text>Note</Text>
+						</Item>
+						<Item on:SMUI:action={addFolder}>
+							<Icon class="material-icons" style="padding-right:5px;">folder</Icon>
+							<Text>Folder</Text>
+						</Item>
+					</List>
+				</Menu>
+			</div>
 			<Separator nav/>
 			<List>
-				<Sidebar></Sidebar>
+				<Sidebar files={fileTree}></Sidebar>
 
 				<Separator nav />
 				<Subheader component={H6}>Starred</Subheader>
