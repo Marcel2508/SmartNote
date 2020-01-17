@@ -1,24 +1,51 @@
+<script context="module">
+  let initiated = false;
+  let refreshCallback = null;
+  export function selectEntry(id){
+    if(initiated && id!=null){
+      const fn = ()=>{
+        const el = jQuery("#fileTree");
+        el.jstree("deselect_all");
+        el.jstree(true).select_node(id,false);
+      }
+      if(refreshCallback)
+        refreshCallback(fn);
+      else fn();
+    }
+  }
+</script>
+
 <script>
-  import {onMount} from 'svelte';
+  import {onMount,createEventDispatcher} from 'svelte';
 
   import {convertFileArray} from '../fileEntry.js';
+  import DeleteDialog from './DeleteDialog.svelte';
+
+  const dispatchEvent = createEventDispatcher();
 
   export let files=[];
-
-  let initiated=false;
+  let dialog;
 
   $: if(files && true){
     if(initiated){
-      jQuery("#fileTree").jstree(true).settings.core.data = files;
-      jQuery("#fileTree").jstree(true).refresh();
-      console.log("CHANGE X");
+      const tree = jQuery("#fileTree");
+      tree.jstree(true).settings.core.data = files;
+      tree.jstree(true).refresh();
+      let rWaiting = [];
+      refreshCallback = (x)=>{
+        rWaiting.push(x);
+      };
+      tree.one("refresh.jstree",()=>{
+        rWaiting.forEach(x=>x());
+        refreshCallback=null;
+      });
     }
   }
 
   function initTree(){
     const el = jQuery("#fileTree");
     el.jstree({
-      plugins:["wholerow","dnd","conditionalselect","contextmenu"],
+      plugins:["wholerow","dnd","conditionalselect"],
       core:{
         multiple:false,
         data:files,
@@ -35,12 +62,21 @@
         return true;
       }
     });
+
+    let selectTo;
     el.on("changed.jstree",(e,data)=>{
-      
+      clearTimeout(selectTo);
+      selectTo=setTimeout(_=>dispatchEvent("nodeSelect",{nodeId:data.selected[0]}),100);
     });
     el.on("move_node.jstree",(e,data)=>{
-      files.find(x=>x.id==data.node.id).parent = data.parent;
+      const f= files.find(x=>x.id==data.node.id);
+      f.changeParent(data.parent);
       files = files;
+      dispatchEvent("nodeMove",{
+        modified: f,
+        id: f.id,
+        parent:data.parent
+      });
     });
 
     el.on("dblclick.jstree",(e,data)=>{
@@ -52,14 +88,28 @@
       if(!id)return;
 
       const foundEntry = files.find(x=>x.id==id);
-      const newName = prompt("File/Folder Name?",foundEntry.name);
-      if(newName==null)return;
-      foundEntry.updateName(newName);
-      files=files;
+
+      
+      dialog.showDeleteDialog(foundEntry.name,(newName)=>{
+        foundEntry.updateName(newName);
+        files=files;
+        dispatchEvent("nodeRename",{
+          modified:foundEntry,
+          newName,
+          id
+        });
+      },()=>{
+        dispatchEvent("nodeDelete",{
+          id
+        });
+      });
     });
     initiated = true;
+
   }
   onMount(initTree);
+
 </script>
 
 <div id="fileTree"></div>
+<DeleteDialog bind:this={dialog}></DeleteDialog>

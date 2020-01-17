@@ -17,7 +17,20 @@ class FileEntry{
     //TODO SAVE
   }
 
-  updateContent(newContent){
+  changeParent(newParent){
+    this.parent=newParent;
+    this._raw.parent = newParent;
+  }
+
+  get starred(){
+    return this._raw.starred;
+  }
+
+  set starred(v){
+    this._raw.starred=v;
+  }
+
+  /*updateContent(newContent){
     if(this.type==2){
       localStorage.setItem(this.id,newContent);
     }else{
@@ -32,6 +45,14 @@ class FileEntry{
       this._arr.splice(idx,1);
     else
       throw new Error("Element not in Array!");
+  }*/
+
+  get isDirectory(){
+    return this.type==1;
+  }
+
+  get asObject(){
+    return this._raw;
   }
 }
 

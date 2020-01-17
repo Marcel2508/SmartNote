@@ -7,7 +7,7 @@
 
 	import {onMount} from 'svelte';
 
-	import Sidebar from './components/Sidebar.svelte';
+	import Sidebar, {selectEntry} from './components/Sidebar.svelte';
 	import NoteEditor from './components/NoteEditor.svelte';
 
 	import FileEntry from './fileEntry.js';
@@ -17,20 +17,30 @@
 
 	export let appVersion;
 
-	let textContent = "";
-	let fileName = "new file";
 	let appData={};
 	let fileTree = [];
 	let selectedFile = null;
 
+	let fileName="";
+	let isStarred;
+	let initiated = false;
+
+	$: fileTree, initiated && saveFileTree();
+
+	$: starredNotes = fileTree.filter(x=>x.starred);
+
 	function addNote(){
 		//Create and initiate a new Node!
-		const f = new FileEntry({id:uniqId(),name:"undefined",type:2,parent:"#"});
+		const f = new FileEntry({id:uniqId(),name:"undefined",type:2,parent:"#",starred:false});
 		fileTree.push(f);
-		textContent = "";
-		fileName = "undefined";
-		selectedFile = f;
+		selectedFile = f.id;
 		fileTree = fileTree;
+		isStarred=f.starred;
+		selectFileEntry(f.id);
+	}
+
+	function selectFileEntry(id){
+		setTimeout(_=>selectEntry(id),1);
 	}
 
 	function addFolder(){
@@ -39,13 +49,9 @@
 	}
 
 	function loadLicense(){
-		fetch("/license-notice.md").then(x=>x.text()).then((licenseNotes)=>{
-			textContent=licenseNotes;
-			fileName = "LICENSE_NOTICE";
-			selectedFile=null;
-		}).catch(ex=>{
-			alert("Error loading License Info!");
-		})
+		selectedFile="LICENSE_NOTE";
+		fileName="LICENSE_NOTE";
+		selectFileEntry("#");
 	}
 
 	function initApp(){
@@ -56,6 +62,7 @@
 			appData = {
 				"created":new Date(),
 				"version":appVersion,
+				"lastChange":new Date(),
 				"fileTree":[]
 			};
 			localStorage.setItem("smartnote",JSON.stringify(appData));
@@ -64,13 +71,94 @@
 			if(appData.version != appVersion)
 				alert("Invalid App-Version!");
 
-			fileTree = appData.fileTree;
+			fileTree = appData.fileTree.map(k=>new FileEntry(k));
 			console.log("Loaded From Storage");
 			console.log(appData);
 		}
+		initiated=true;
+	}
+
+
+	function nodeSelect(evt,force){
+		if(evt.detail.nodeId==undefined)return;
+		selectedFile = evt.detail.nodeId;
+		const f = fileTree.find(x=>x.id==evt.detail.nodeId);
+		if(f)
+			fileName = f.name;
+		isStarred = f.starred;
+		if(force)selectFileEntry(evt.detail.nodeId);
+	}
+
+	function updateFilenameFromEditor(evt){
+		const f = fileTree.find(x=>x.id==selectedFile);
+		if(!f)return;
+		f.updateName(evt.detail.newName);
+		fileTree=fileTree;
+	}
+
+	function deleteCurrentFile(){
+		if(!(selectedFile==null || selectedFile=="LICENSE_NOTE")){
+			const f = fileTree.find(x=>x.id==selectedFile);
+			if(!f)return;
+			localStorage.removeItem(selectedFile);
+			const idx = fileTree.indexOf(f);
+			if(idx!=-1)fileTree.splice(idx,1);
+			fileTree=fileTree;
+		}
+	}
+
+	function nodeDeleteHandler(evt){
+		const id = evt.detail.id;
+		const foundEntry = fileTree.find(x=>x.id==id);
+		if(foundEntry.isDirectory){
+			//Travers tree to delete all children!
+			//deleteFolder(foundEntry);
+			deleteFolder(foundEntry);
+			fileTree=fileTree;
+		}else{
+			localStorage.removeItem(foundEntry);
+			fileTree.splice(fileTree.indexOf(foundEntry),1);
+			fileTree=fileTree;
+		}
+	}
+
+	function deleteFolder(entry){
+		//TODO: Check for asynchronous timing problems!
+		fileTree.filter(x=>x.parent==entry.id).forEach(x=>{
+			if(x.isDirectory){
+				deleteFolder(x);
+			}else{
+				localStorage.removeItem(x);
+			}
+			fileTree.splice(fileTree.indexOf(x),1);
+		});
+		fileTree.splice(fileTree.indexOf(entry),1);
 	}
 
 	onMount(initApp);
+
+
+	function saveFileTree(){
+		appData.lastChange=new Date();
+		appData.fileTree = fileTree.map(x=>x.asObject);
+		localStorage.setItem("smartnote",JSON.stringify(appData));
+	}
+
+	function nodeMoved(){
+		saveFileTree();
+	}
+
+	function nodeRenamed(){
+		saveFileTree();
+	}
+
+	function toggleNoteStarred(){
+		const f = fileTree.find(x=>x.id==selectedFile);
+		if(f){
+			f.starred=!f.starred;
+		}
+		fileTree=fileTree;
+	}
 
 </script>
 
@@ -101,10 +189,16 @@
 			</div>
 			<Separator nav/>
 			<List>
-				<Sidebar files={fileTree}></Sidebar>
+				<Sidebar files={fileTree} {selectedFile} on:nodeSelect={nodeSelect} on:nodeDelete={nodeDeleteHandler} on:nodeMove={nodeMoved} on:nodeRename={nodeRenamed}></Sidebar>
 
 				<Separator nav />
 				<Subheader component={H6}>Starred</Subheader>
+				{#each starredNotes as note}
+					<Item href="javascript:void(0)" on:click={_=>nodeSelect({detail:{nodeId:note.id}},true)}>
+						<Icon class="material-icons ico">star</Icon>
+						<Text class="txt">{note.name}</Text>
+					</Item>
+				{/each}
 			</List>
 		</Content>
 		<div class="numCount">
@@ -114,7 +208,7 @@
 
 	<AppContent class="app-app-content">
 		<main class="app-main-content">
-			<NoteEditor bind:textContent={textContent} fileName={fileName}></NoteEditor>
+			<NoteEditor fileName={fileName} fileId={selectedFile} on:nameChange={updateFilenameFromEditor} on:deleteFile={deleteCurrentFile} {isStarred} on:starNote={toggleNoteStarred}></NoteEditor>
 		</main>
 	</AppContent>
 </div>

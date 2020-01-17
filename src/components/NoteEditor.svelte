@@ -7,27 +7,35 @@
 
 	const dispatch = createEventDispatcher();
 
-  export let textContent="";
   export let fileName="unnamed";
-  export let filePrefix="/";
+  export let fileId=null;
+  export let isStarred;
 
-  //Used to detect wether this change came from my Parent node, or myself
-  let internalTextContent=textContent;
-  let internalChange = false;
+  let textContent="";
 
   let nameHasChanged = false;
   let valueHasChanged = false;
 
-  $: if(textContent != internalTextContent){
-    internalTextContent = textContent;
-    if(!internalChange){
-      nameHasChanged = false;
-      valueHasChanged = false;
+  let syntaxTo;
+
+  $: fileId, loadContent();
+
+  function loadContent(){
+    if(fileId==="LICENSE_NOTE"){
+      //SPECIAL CASE - NO ACTUAL FILE!
+      fetch("/license-notice.md").then(x=>x.text()).then((licenseNotes)=>{
+        textContent=licenseNotes;
+      }).catch(ex=>{
+        console.error(ex);
+        alert("Error loading License Info!");
+      })
+    }else{
+      const fc = localStorage.getItem(fileId);
+      if(fc==null)textContent="";
+      else textContent=fc;
     }
-    internalChange = false;
   }
 
-  let syntaxTo;
   function getMarkdown(x){
     //wait
     clearTimeout(syntaxTo);
@@ -51,7 +59,8 @@
 
   function deleteFile(){
     if(confirm("Are you sure?")){
-      dispatch("delete");
+      localStorage.removeItem(fileId);
+      dispatch("deleteFile");
     }
   }
 
@@ -60,8 +69,6 @@
   }
 
   function textChange(){
-    internalTextContent=textContent;
-    internalChange = true;
     valueHasChanged = true;
   }
 
@@ -71,19 +78,24 @@
   }
 
   function saveFile(){
-
     valueHasChanged = false;
+    localStorage.setItem(fileId,textContent);
     dispatch("contentSave",{
       newContent:textContent
     });
+  }
+  
+  function starNote(){
+    dispatch("starNote");
   }
 
 </script>
 <div class="editorHalf">
   <div class="fileSettingsBar">
-    <div style="float:left;line-height:29px;padding-left:5px;font-size:13px;">{filePrefix}</div>
+    <!--<div style="float:left;line-height:29px;padding-left:5px;font-size:13px;">{filePrefix}</div>-->
     <input type="text" bind:value={fileName} placeholder="Filename" on:input={nameChanged} id="nameInp">
     <Fab mini class="fab-btn {nameHasChanged?'':'disabled'}" on:click={updateFilename}><Icon class="material-icons">{nameHasChanged?"check":"edit"}</Icon></Fab>
+    <Fab mini class="fab-btn star" on:click={starNote}><Icon class="material-icons">{isStarred?"star":"star_border"}</Icon></Fab>
     <Fab mini class="fab-btn del" on:click={deleteFile}><Icon class="material-icons">delete</Icon></Fab>
     <Button class="save-btn" color="secondary">
       <Label class="save-text {valueHasChanged?'':'disabled'}" on:click={saveFile}>Save</Label>
