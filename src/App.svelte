@@ -24,6 +24,7 @@
 	let fileName="";
 	let isStarred;
 	let initiated = false;
+	let valueHasChanged = false;
 
 	$: fileTree, initiated && saveFileTree();
 
@@ -81,6 +82,11 @@
 
 	function nodeSelect(evt,force){
 		if(evt.detail.nodeId==undefined)return;
+		if(valueHasChanged && !confirm("Are you sure you want to do this without saving?")){
+			selectFileEntry(selectedFile);
+			return;
+		}	
+
 		selectedFile = evt.detail.nodeId;
 		const f = fileTree.find(x=>x.id==evt.detail.nodeId);
 		if(f)
@@ -104,6 +110,9 @@
 			const idx = fileTree.indexOf(f);
 			if(idx!=-1)fileTree.splice(idx,1);
 			fileTree=fileTree;
+			selectedFile=null;
+			fileName="";
+			isStarred=false;
 		}
 	}
 
@@ -208,7 +217,7 @@
 
 	<AppContent class="app-app-content">
 		<main class="app-main-content">
-			<NoteEditor fileName={fileName} fileId={selectedFile} on:nameChange={updateFilenameFromEditor} on:deleteFile={deleteCurrentFile} {isStarred} on:starNote={toggleNoteStarred}></NoteEditor>
+			<NoteEditor fileName={fileName} fileId={selectedFile} on:nameChange={updateFilenameFromEditor} on:deleteFile={deleteCurrentFile} {isStarred} on:starNote={toggleNoteStarred} bind:valueHasChanged={valueHasChanged}></NoteEditor>
 		</main>
 	</AppContent>
 </div>

@@ -5,6 +5,8 @@
   import Fab, {Icon} from '@smui/fab';
   import Button, {Label} from '@smui/button';
 
+  import Tutorial from './Tutorial.svelte';
+
 	const dispatch = createEventDispatcher();
 
   export let fileName="unnamed";
@@ -14,7 +16,7 @@
   let textContent="";
 
   let nameHasChanged = false;
-  let valueHasChanged = false;
+  export let valueHasChanged = false;
 
   let syntaxTo;
 
@@ -59,7 +61,7 @@
 
   function deleteFile(){
     if(confirm("Are you sure?")){
-      localStorage.removeItem(fileId);
+      //localStorage.removeItem(fileId);
       dispatch("deleteFile");
     }
   }
@@ -90,7 +92,7 @@
   }
 
 </script>
-<div class="editorHalf">
+<div class="editorHalf {fileId==null?'hidden':''}">
   <div class="fileSettingsBar">
     <!--<div style="float:left;line-height:29px;padding-left:5px;font-size:13px;">{filePrefix}</div>-->
     <input type="text" bind:value={fileName} placeholder="Filename" on:input={nameChanged} id="nameInp">
@@ -102,6 +104,9 @@
     </Button>
   </div>
   <MarkdownCode bind:value={textContent} on:change={textChange}></MarkdownCode>
+</div>
+<div class="editorHalf {fileId==null?'':'hidden'}">
+  <Tutorial></Tutorial>
 </div>
 <div class="CodePreview">
 {@html getMarkdown(textContent)}
