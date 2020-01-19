@@ -251,7 +251,7 @@
 			</List>
 		</Content>
 		<div class="numCount">
-			<a on:click={loadLicense} href="javascript:void(0);" style="font-family:sans-serif;">Third party Libraries</a>
+			<a on:click={loadLicense} href="javascript:void(0);" style="font-family:sans-serif;">Third Party Libraries</a>
 		</div>
 	</Drawer>
 
