@@ -23,6 +23,8 @@
   $: fileId, loadContent();
 
   function loadContent(){
+    nameHasChanged=false;
+    valueHasChanged=false;
     if(fileId==="LICENSE_NOTE"){
       //SPECIAL CASE - NO ACTUAL FILE!
       fetch("/license-notice.md").then(x=>x.text()).then((licenseNotes)=>{
@@ -92,7 +94,7 @@
   }
 
 </script>
-<div class="editorHalf {fileId==null?'hidden':''}">
+<div class="editorHalf {fileId==null?'invisible':''}">
   <div class="fileSettingsBar">
     <!--<div style="float:left;line-height:29px;padding-left:5px;font-size:13px;">{filePrefix}</div>-->
     <input type="text" bind:value={fileName} placeholder="Filename" on:input={nameChanged} id="nameInp">
@@ -105,9 +107,8 @@
   </div>
   <MarkdownCode bind:value={textContent} on:change={textChange}></MarkdownCode>
 </div>
-<div class="editorHalf {fileId==null?'':'hidden'}">
-  <Tutorial></Tutorial>
-</div>
+  <Tutorial hidden={fileId==null?false:true}></Tutorial>
 <div class="CodePreview">
+<span class="previewText">Preview:</span>
 {@html getMarkdown(textContent)}
 </div>

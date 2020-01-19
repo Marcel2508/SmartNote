@@ -32,12 +32,14 @@
 
 	function addNote(){
 		//Create and initiate a new Node!
-		const f = new FileEntry({id:uniqId(),name:"undefined",type:2,parent:"#",starred:false});
+		const f = new FileEntry({id:uniqId(),name:"New Note",type:2,parent:"#",starred:false});
 		fileTree.push(f);
-		selectedFile = f.id;
+		if(!valueHasChanged){
+			selectedFile = f.id;
+			isStarred=f.starred;
+			selectFileEntry(f.id);
+		}
 		fileTree = fileTree;
-		isStarred=f.starred;
-		selectFileEntry(f.id);
 	}
 
 	function selectFileEntry(id){
@@ -82,9 +84,11 @@
 
 	function nodeSelect(evt,force){
 		if(evt.detail.nodeId==undefined)return;
-		if(valueHasChanged && !confirm("Are you sure you want to do this without saving?")){
-			selectFileEntry(selectedFile);
-			return;
+		if(valueHasChanged && selectedFile != evt.detail.nodeId){
+			if(!confirm("Are you sure you want to close without saving?")){
+				selectFileEntry(selectedFile);
+				return;
+			}
 		}	
 
 		selectedFile = evt.detail.nodeId;
@@ -113,6 +117,7 @@
 			selectedFile=null;
 			fileName="";
 			isStarred=false;
+			valueHasChanged=false;
 		}
 	}
 
@@ -128,6 +133,11 @@
 			localStorage.removeItem(foundEntry);
 			fileTree.splice(fileTree.indexOf(foundEntry),1);
 			fileTree=fileTree;
+			if(id==selectedFile){
+				selectedFile=null;
+				fileName="";
+				valueHasChanged=false;
+			}
 		}
 	}
 
@@ -140,8 +150,18 @@
 				localStorage.removeItem(x);
 			}
 			fileTree.splice(fileTree.indexOf(x),1);
+			if(x.id==selectedFile){
+				selectedFile=null;
+				fileName="";
+				valueHasChanged=false;
+			}
 		});
 		fileTree.splice(fileTree.indexOf(entry),1);
+		if(entry.id==selectedFile){
+			selectedFile=null;
+			fileName="";
+			valueHasChanged=false;
+		}
 	}
 
 	onMount(initApp);

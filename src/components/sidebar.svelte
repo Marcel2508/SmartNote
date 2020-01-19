@@ -58,7 +58,10 @@
         }
       },
       conditionalselect:(node,event)=>{
-        if(node.original.type==1)return false;
+        if(node.original.type==1){
+          el.jstree("toggle_node",node);
+          return false;
+        }
         return true;
       }
     });
@@ -104,6 +107,7 @@
         });
       });
     });
+
     initiated = true;
 
   }
