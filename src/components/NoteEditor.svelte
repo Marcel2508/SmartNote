@@ -110,8 +110,8 @@
     <Fab mini class="fab-btn {nameHasChanged?'':'disabled'}" on:click={updateFilename}><Icon class="material-icons">{nameHasChanged?"check":"edit"}</Icon></Fab>
     <Fab mini class="fab-btn star" on:click={starNote}><Icon class="material-icons">{isStarred?"star":"star_border"}</Icon></Fab>
     <Fab mini class="fab-btn del" on:click={deleteFile}><Icon class="material-icons">delete</Icon></Fab>
-    <Button class="save-btn" color="secondary">
-      <Label class="save-text {valueHasChanged?'':'disabled'}" on:click={saveFile}>Save</Label>
+    <Button class="save-btn" color="secondary" on:click={saveFile}>
+      <Label class="save-text {valueHasChanged?'':'disabled'}">Save</Label>
     </Button>
   </div>
   <MarkdownCode bind:value={textContent} on:change={textChange}></MarkdownCode>

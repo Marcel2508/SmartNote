@@ -97,7 +97,8 @@
 
 		const urlArgs = parseUrl();
 		if(urlArgs.hasOwnProperty("note")){
-			nodeSelect({detail:{nodeId:urlArgs.note}},true);
+			if(fileTree.find(x=>x.id==urlArgs.note))//Check if Node already deleted
+				nodeSelect({detail:{nodeId:urlArgs.note}},true);
 		}
 	}
 
