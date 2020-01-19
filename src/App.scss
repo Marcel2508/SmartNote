@@ -84,14 +84,31 @@ body, app {
   width:300px;
 }
 
+.fileSettingsBar.right{
+  position: fixed;
+  right:0px;
+  top:0px;
+  width:calc(50% - 128px);
+  background-color: #FFF;
+}
+
 
 .CodePreview{
-  width: calc(50% - 20px);
-  height: calc(100% - 20px);
+  width: 50%;
+  height: 100%;
   float:left;
   font-family: sans-serif;
-  padding:10px;
   overflow:auto;
+  padding:0px;
+}
+
+.CodePreview .inner{
+  padding:10px;
+  padding-top:39px;
+}
+
+.CodePreview .inner img{
+  max-width:100%;
 }
 
 .numCount{
@@ -186,9 +203,13 @@ body, app {
 }
 
 .previewText{
-  position:absolute;
-  top:2px;
-  left:75%;
-  transform: translateX(-50%);
-  font-size:12px;
+  position: absolute;
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+}
+
+
+.fab-btn.print:hover{
+  color: #55F;
 }

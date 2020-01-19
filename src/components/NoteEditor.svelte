@@ -7,6 +7,8 @@
 
   import Tutorial from './Tutorial.svelte';
 
+  import PrintDocument from '../print.js';
+
 	const dispatch = createEventDispatcher();
 
   export let fileName="unnamed";
@@ -38,6 +40,9 @@
       if(fc==null)textContent="";
       else textContent=fc;
     }
+    //Set URL
+    if(history && history.replaceState && fileId!=null)
+      history.replaceState(null,fileName,"?note="+fileId);
   }
 
   function getMarkdown(x){
@@ -93,6 +98,10 @@
     dispatch("starNote");
   }
 
+  function doPrint(){
+    PrintDocument(fileName,getMarkdown(textContent));
+  }
+
 </script>
 <div class="editorHalf {fileId==null?'invisible':''}">
   <div class="fileSettingsBar">
@@ -109,6 +118,9 @@
 </div>
   <Tutorial hidden={fileId==null?false:true}></Tutorial>
 <div class="CodePreview">
-<span class="previewText">Preview:</span>
-{@html getMarkdown(textContent)}
+<div class="fileSettingsBar right">
+  <span class="previewText">Preview:</span>
+  <Fab mini class="fab-btn del print" on:click={doPrint}><Icon class="material-icons">print</Icon></Fab>
+</div>
+<div class="inner">{@html getMarkdown(textContent)}</div>
 </div>

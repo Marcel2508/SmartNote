@@ -30,6 +30,21 @@
 
 	$: starredNotes = fileTree.filter(x=>x.starred);
 
+	//For loading URLs
+	function parseUrl(){
+		try{
+			let r = {};
+			if(location.search && location.search.length)
+				location.search.substr(1).split("&").forEach(x=>{const k = x.split("=");r[k[0]]=k[1];});
+			return r;
+		}catch(ex){
+			console.error(ex);
+			console.error("Cannot parse Parameters!");
+			return {};
+		}
+	}
+
+
 	function addNote(){
 		//Create and initiate a new Node!
 		const f = new FileEntry({id:uniqId(),name:"New Note",type:2,parent:"#",starred:false});
@@ -79,6 +94,11 @@
 			console.log(appData);
 		}
 		initiated=true;
+
+		const urlArgs = parseUrl();
+		if(urlArgs.hasOwnProperty("note")){
+			nodeSelect({detail:{nodeId:urlArgs.note}},true);
+		}
 	}
 
 
