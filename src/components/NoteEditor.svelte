@@ -102,10 +102,15 @@
     PrintDocument(fileName,getMarkdown(textContent));
   }
 
+  function sidebarClick(){
+    dispatch("openSidebarClick");
+  }
+
 </script>
 <div class="editorHalf {fileId==null?'invisible':''}">
   <div class="fileSettingsBar">
     <!--<div style="float:left;line-height:29px;padding-left:5px;font-size:13px;">{filePrefix}</div>-->
+    <Fab mini class="fab-btn sidebar" on:click={sidebarClick}><Icon class="material-icons">menu</Icon></Fab>
     <input type="text" bind:value={fileName} placeholder="Filename" on:input={nameChanged} id="nameInp">
     <Fab mini class="fab-btn {nameHasChanged?'':'disabled'}" on:click={updateFilename}><Icon class="material-icons">{nameHasChanged?"check":"edit"}</Icon></Fab>
     <Fab mini class="fab-btn star" on:click={starNote}><Icon class="material-icons">{isStarred?"star":"star_border"}</Icon></Fab>

@@ -92,6 +92,10 @@ body, app {
   background-color: #FFF;
 }
 
+.fileSettingsBar .sidebar{
+  display:none;
+  float:left;
+}
 
 .CodePreview{
   width: 50%;
@@ -214,4 +218,52 @@ body, app {
 
 .fab-btn.print:hover{
   color: #55F;
+}
+
+.fab-btn.sidebar, .fab-btn.sidebar:hover{
+  color: #000;
+}
+
+.mdc-drawer--open + .app-app-content{
+  overflow-y:hidden;
+}
+
+.mdc-drawer--open + .app-app-content > .app-main-content{
+  min-width: 500px;
+}
+
+@media only screen and (max-width: 1200px) {
+  /* your CSS here */
+  .fileSettingsBar input[type="text"]{
+    width:140px;
+  }
+}
+
+@media only screen and (max-width: 880px) {
+  /* your CSS here */
+  .CodePreview{
+    display:none;
+  }
+  .CodeMirror{
+    width:100%;
+    border:0;
+  }
+  .tutorial{
+    width:100%;
+  }
+  .editorHalf{
+    width:100%;
+    border:0;
+  }
+}
+
+@media only screen and (max-width: 680px) {
+  /* your CSS here */
+  .fileSettingsBar .sidebar{
+    display:block;
+  }
+
+  .fileSettingsBar input[type="text"]{
+    width:80px;
+  }
 }

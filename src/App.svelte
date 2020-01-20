@@ -210,10 +210,26 @@
 		fileTree=fileTree;
 	}
 
+	//Mobile
+	let isSmall = false;
+	let mobileMenuOpen=false;	
+	let menuDrawer;
+	function recalcScreenSize(){
+		if(window.innerWidth<680)isSmall=true;
+		else isSmall=false;
+		mobileMenuOpen=false;
+	}
+	window.onresize = recalcScreenSize;
+	recalcScreenSize();
+
+	function dialogClickCheck(){
+		if(isSmall&&mobileMenuOpen)mobileMenuOpen=false;
+	}
+
 </script>
 
 <div class="drawer-container">
-	<Drawer class="app-drawer">
+	<Drawer class="app-drawer" variant={isSmall?'dismissible':''} bind:this={menuDrawer} bind:open={mobileMenuOpen}>
 		<Header>
 			<Title>Notes App</Title>
 			<Subtitle>Take Notes - The easy way!</Subtitle>
@@ -256,9 +272,9 @@
 		</div>
 	</Drawer>
 
-	<AppContent class="app-app-content">
+	<AppContent class="app-app-content" on:click={dialogClickCheck}>
 		<main class="app-main-content">
-			<NoteEditor fileName={fileName} fileId={selectedFile} on:nameChange={updateFilenameFromEditor} on:deleteFile={deleteCurrentFile} {isStarred} on:starNote={toggleNoteStarred} bind:valueHasChanged={valueHasChanged}></NoteEditor>
+			<NoteEditor fileName={fileName} fileId={selectedFile} on:nameChange={updateFilenameFromEditor} on:deleteFile={deleteCurrentFile} {isStarred} on:starNote={toggleNoteStarred} bind:valueHasChanged={valueHasChanged} on:openSidebarClick={_=>mobileMenuOpen=!mobileMenuOpen}></NoteEditor>
 		</main>
 	</AppContent>
 </div>
