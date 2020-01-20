@@ -95,6 +95,7 @@ body, app {
 .fileSettingsBar .sidebar{
   display:none;
   float:left;
+  z-index:9999;
 }
 
 .CodePreview{
