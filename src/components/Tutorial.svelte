@@ -1,5 +1,11 @@
-<script>export let hidden=true;</script>
+<script>
+import Fab, {Icon} from '@smui/fab';
+import { createEventDispatcher } from 'svelte';
+const dispatch = createEventDispatcher();
+export let hidden=true;
+</script>
 <div class="tutorial {hidden?'hidden':''}">
+<Fab mini class="fab-btn sidebar double-sidebar" on:click={_=>dispatch("menuClick")}><Icon class="material-icons">menu</Icon></Fab>
   <h3 style="text-align:center;">Tutorial:</h3>
 CREATE:<br/>
 Add notes or folders by pressing the [+Add]-Button.<br/>

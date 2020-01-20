@@ -121,7 +121,7 @@
   </div>
   <MarkdownCode bind:value={textContent} on:change={textChange}></MarkdownCode>
 </div>
-  <Tutorial hidden={fileId==null?false:true}></Tutorial>
+  <Tutorial hidden={fileId==null?false:true} on:menuClick={sidebarClick}></Tutorial>
 <div class="CodePreview">
 <div class="fileSettingsBar right">
   <span class="previewText">Preview:</span>
