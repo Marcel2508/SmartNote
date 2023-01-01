@@ -16,7 +16,7 @@
     "svelte": "^3.0.0"
   },
   "dependencies": {
-    "rollup-plugin-postcss": "^2.0.3",
+    "rollup-plugin-postcss": "^4.0.2",
     "sass": "^1.24.4",
     "scss": "^0.2.4",
     "sirv-cli": "^0.4.4",
